@@ -3,7 +3,6 @@ family = "Iosevka Code"
 spacing = "normal"
 serifs = "slab"
 noCvSs = true
-exportGlyphNames = true
 
 [buildPlans.IosevkaCode.variants.design]
 capital-a = "straight-base-serifed"
