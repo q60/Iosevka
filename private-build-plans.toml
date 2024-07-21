@@ -1,0 +1,199 @@
+[buildPlans.IosevkaCode]
+family = "Iosevka Code"
+spacing = "normal"
+serifs = "slab"
+noCvSs = true
+
+[buildPlans.IosevkaCode.variants.design]
+capital-a = "straight-base-serifed"
+capital-q = "open-swash"
+capital-w = "straight-serifed"
+capital-x = "straight-motion-serifed"
+f = "extended"
+g = "double-storey-open"
+i = "serifed-asymmetric"
+j = "serifed"
+l = "zshaped"
+q = "straight-serifed"
+r = "serifed"
+w = "straight-serifed"
+x = "straight-motion-serifed"
+asterisk = "penta-low"
+caret = "medium"
+ascii-grave = "straight"
+ascii-single-quote = "raised-comma"
+paren = "normal"
+brace = "straight"
+number-sign = "upright"
+ampersand = "et-tailed"
+at = "fourfold"
+dollar = "through"
+percent = "rings-segmented-slash"
+question = "smooth"
+pilcrow = "low"
+lig-ltgteq = "slanted"
+lig-equal-chain = "without-notch"
+lig-hyphen-chain = "without-notch"
+lig-double-arrow-bar = "without-notch"
+lig-single-arrow-bar = "without-notch"
+
+[buildPlans.IosevkaCode.variants.italic]
+f = "flat-hook-tailed-crossbar-at-x-height"
+i = "tailed-serifed"
+q = "straight-bottom-serifed"
+braille-dot = "round"
+asterisk = "penta-low"
+
+  [buildPlans.IosevkaCode.ligations]
+  inherits = "dlig"
+
+[buildPlans.IosevkaCode.weights.Light]
+shape = 300
+menu = 300
+css = 300
+
+[buildPlans.IosevkaCode.weights.Regular]
+shape = 400
+menu = 400
+css = 400
+
+[buildPlans.IosevkaCode.weights.Medium]
+shape = 500
+menu = 500
+css = 500
+
+[buildPlans.IosevkaCode.weights.SemiBold]
+shape = 600
+menu = 600
+css = 600
+
+[buildPlans.IosevkaCode.weights.Bold]
+shape = 700
+menu = 700
+css = 700
+
+[buildPlans.IosevkaCode.weights.ExtraBold]
+shape = 800
+menu = 800
+css = 800
+
+[buildPlans.IosevkaCode.weights.Heavy]
+shape = 900
+menu = 900
+css = 900
+
+[buildPlans.IosevkaCode.widths.Normal]
+shape = 600
+menu = 5
+css = "normal"
+
+[buildPlans.IosevkaCode.widths.SemiExtended]
+shape = 658
+menu = 6
+css = "semi-expanded"
+
+[buildPlans.IosevkaCode.widths.Extended]
+shape = 720
+menu = 7
+css = "expanded"
+
+
+[buildPlans.IosevkaTerminal]
+family = "Iosevka Terminal"
+spacing = "term"
+serifs = "slab"
+noCvSs = true
+exportGlyphNames = true
+
+[buildPlans.IosevkaTerminal.variants.design]
+capital-a = "straight-base-serifed"
+capital-q = "open-swash"
+capital-w = "straight-serifed"
+capital-x = "straight-motion-serifed"
+f = "extended"
+g = "double-storey-open"
+i = "serifed-asymmetric"
+j = "serifed"
+l = "zshaped"
+q = "straight-serifed"
+r = "serifed"
+w = "straight-serifed"
+x = "straight-motion-serifed"
+asterisk = "penta-low"
+caret = "medium"
+ascii-grave = "straight"
+ascii-single-quote = "raised-comma"
+paren = "normal"
+brace = "straight"
+number-sign = "upright"
+ampersand = "et-tailed"
+at = "fourfold"
+dollar = "through"
+percent = "rings-segmented-slash"
+question = "smooth"
+pilcrow = "low"
+lig-ltgteq = "slanted"
+lig-equal-chain = "without-notch"
+lig-hyphen-chain = "without-notch"
+lig-double-arrow-bar = "without-notch"
+lig-single-arrow-bar = "without-notch"
+
+[buildPlans.IosevkaTerminal.variants.italic]
+f = "flat-hook-tailed-crossbar-at-x-height"
+i = "tailed-serifed"
+q = "straight-bottom-serifed"
+braille-dot = "round"
+asterisk = "penta-low"
+
+  [buildPlans.IosevkaTerminal.ligations]
+  inherits = "dlig"
+
+[buildPlans.IosevkaTerminal.weights.Light]
+shape = 300
+menu = 300
+css = 300
+
+[buildPlans.IosevkaTerminal.weights.Regular]
+shape = 400
+menu = 400
+css = 400
+
+[buildPlans.IosevkaTerminal.weights.Medium]
+shape = 500
+menu = 500
+css = 500
+
+[buildPlans.IosevkaTerminal.weights.SemiBold]
+shape = 600
+menu = 600
+css = 600
+
+[buildPlans.IosevkaTerminal.weights.Bold]
+shape = 700
+menu = 700
+css = 700
+
+[buildPlans.IosevkaTerminal.weights.ExtraBold]
+shape = 800
+menu = 800
+css = 800
+
+[buildPlans.IosevkaTerminal.weights.Heavy]
+shape = 900
+menu = 900
+css = 900
+
+[buildPlans.IosevkaTerminal.widths.Normal]
+shape = 600
+menu = 5
+css = "normal"
+
+[buildPlans.IosevkaTerminal.widths.SemiExtended]
+shape = 658
+menu = 6
+css = "semi-expanded"
+
+[buildPlans.IosevkaTerminal.widths.Extended]
+shape = 720
+menu = 7
+css = "expanded"
