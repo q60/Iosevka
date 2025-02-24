@@ -9,12 +9,11 @@ glyph-block Letter-Latin-Lower-M : begin
 	glyph-block-import CommonShapes
 	glyph-block-import Common-Derivatives
 	glyph-block-import Mark-Adjustment : LeaningAnchor
-	glyph-block-import Letter-Shared-Shapes : CurlyTail nShoulder nShoulderMask
-	glyph-block-import Letter-Shared-Shapes : RightwardTailedBar DToothlessRise DMBlend MidHook
-	glyph-block-import Letter-Shared-Shapes : CyrDescender PalatalHook EngHook UpwardHookShape
-	glyph-block-import Letter-Shared-Shapes : SerifFrame
+	glyph-block-import Letter-Shared-Shapes : CurlyTail nShoulder RightwardTailedBar
+	glyph-block-import Letter-Shared-Shapes : MidHook CyrDescender PalatalHook EngHook
+	glyph-block-import Letter-Shared-Shapes : UpwardHookShape SerifFrame
 
-	define [SmallMSmooth df] : df.div * (0.5 * SmallArchDepth + 0.375 * Stroke)
+	define [SmallMSmooth df] : df.adws * (0.5 * SmallArchDepth + 0.375 * Stroke)
 	define [SmallMShoulderSpiro] : with-params [left right top bottom width fine df coBottom] : glyph-proc
 		local fix : TanSlope * [HSwToV Stroke] * width / Stroke
 		local sm : [SmallMSmooth df] + fix / 2
@@ -89,8 +88,11 @@ glyph-block Letter-Latin-Lower-M : begin
 		local sf : SerifFrame.fromDf df top rbot
 		return sf.rb.outer
 
+	define [dfM] : DivFrame para.advanceScaleMM 3
+
 	glyph-block-export MEnoughSpaceForFullSerifs
-	define [MEnoughSpaceForFullSerifs df _mid] : begin
+	define [MEnoughSpaceForFullSerifs _df _mid] : begin
+		local df : fallback _df : dfM
 		local mid : fallback _mid df.middle
 		local ink : HSwToV df.mvs
 		local gap : [Math.min (mid - df.leftSB) (df.rightSB - mid)] - 1.5 * ink
@@ -127,8 +129,7 @@ glyph-block Letter-Latin-Lower-M : begin
 		local fFull : MEnoughSpaceForFullSerifs df : fallback _mid df.middle
 		include : SmallMBottomMotionRightSerif df top rbot fFull
 
-	glyph-block-export dfM
-	define [dfM] : DivFrame para.diversityM 3
+	glyph-block-export SmallMArches
 	define [SmallMArches df top lbot mbot rbot _mid] : glyph-proc
 		local mid : fallback _mid df.middle
 		include : SmallMShoulderSpiro
@@ -138,7 +139,7 @@ glyph-block Letter-Latin-Lower-M : begin
 			top       -- top
 			bottom    -- mbot
 			width     -- df.mvs
-			fine      -- (df.mvs * ShoulderFine / Stroke)
+			fine      -- df.shoulderFine
 		include : SmallMShoulderSpiro
 			df        -- df
 			left      -- (mid + [HSwToV : 0.5 * df.mvs])
@@ -146,7 +147,7 @@ glyph-block Letter-Latin-Lower-M : begin
 			top       -- top
 			bottom    -- rbot
 			width     -- df.mvs
-			fine      -- (df.mvs * ShoulderFine / Stroke)
+			fine      -- df.shoulderFine
 		include : tagged 'barL' : VBar.l df.leftSB lbot top df.mvs
 
 	define [SmallMShortLegHeight top df] : (top - df.mvs) * 0.45
@@ -182,6 +183,7 @@ glyph-block Letter-Latin-Lower-M : begin
 		include : tagged 'barL' : VBar.l df.leftSB lbot (top - DToothlessRise) df.mvs
 		# include : tagged 'barM' : VBar.m mid mbot (top - DToothlessRise) df.mvs
 
+	glyph-block-export EarlessRoundedDoubleArchSmallMShape
 	define [EarlessRoundedDoubleArchSmallMShape df top lbot mbot rbot _mid] : glyph-proc
 		local mid : fallback _mid df.middle
 		include : union
@@ -259,10 +261,10 @@ glyph-block Letter-Latin-Lower-M : begin
 				include : EngHook df.rightSB 0 Descender (sw -- df.mvs)
 
 			create-glyph "mCrossedTail.\(suffix)" : glyph-proc
-				local df : include : DivFrame para.diversityM 3.25
+				local df : include : DivFrame para.advanceScaleMM 3.25
 				include : df.markSet.e
 
-				local fine : AdviceStroke 4.5 df.div
+				local fine : AdviceStroke 4.5 df.adws
 				local rinner : XH * 0.15 - fine * 0.75
 				local gap : (df.rightSB - df.leftSB - 3 * [HSwToV df.mvs] - [HSwToV fine]) / 3
 				local m1 : df.rightSB - [HSwToV df.mvs]
@@ -279,31 +281,43 @@ glyph-block Letter-Latin-Lower-M : begin
 		if (Body === SmallMArches && !shortLeg) : begin
 			if (!tailed) : begin
 				create-glyph "cyrl/tjeKomi.italic.\(suffix)" : glyph-proc
-					local df : include : DivFrame [mix 1 para.diversityM 2] 4
+					local df : include : DivFrame [mix 1 para.advanceScaleMM 2] 4
 					include : df.markSet.e
 					local subDf : df.slice 4 3 0
 					include : Body subDf XH 0 0 (XH / 2)
 					include : UpwardHookShape
-						left -- subDf.rightSB - [HSwToV subDf.mvs]
-						right -- df.rightSB
+						left   -- (subDf.rightSB - [HSwToV subDf.mvs])
+						right  -- df.rightSB
 						ybegin -- (XH / 2)
-						yend -- (XH / 2)
-						ada -- (SmallArchDepthA * 0.6 * df.div)
-						adb -- (SmallArchDepthB * 0.6 * df.div)
-						sw -- subDf.mvs
+						yend   -- (XH / 2)
+						ada    -- (SmallArchDepthA * 0.5 * df.adws)
+						adb    -- (SmallArchDepthB * 0.5 * df.adws)
+						sw     -- subDf.mvs
 					include : Serifs subDf XH 0 0 (XH / 2) true false
-					local sf2 : [SerifFrame.fromDf df (XH / 2) 0].slice 2 3
-					if SLAB : include sf2.rt.full
+					if SLAB : begin
+						local sf2 : [SerifFrame.fromDf df (XH / 2) 0].slice 2 3
+						include sf2.rt.full
+
+				create-glyph "cyrl/tje.italic/base/corner.\(suffix)" : glyph-proc
+					local df : include : DivFrame [mix 1 para.advanceScaleMM 2] 4
+					include : df.markSet.e
+					local subDf : df.slice 4 3 0
+					include : Body   subDf XH 0 0 (XH - SmallArchDepthB - TINY)
+					include : Serifs subDf XH 0 0 0 false false
+
+				create-glyph "cyrl/tje.italic/base/cursive.\(suffix)" : glyph-proc
+					include [refer-glyph "cyrl/tje.italic/base/corner.\(suffix)"] AS_BASE ALSO_METRICS
+					eject-contour 'serifRB'
 
 			create-glyph "cyrl/teMidHook.italic.\(suffix)" : glyph-proc
-				local df : include : DivFrame [mix 1 para.diversityM 2] 4
+				local df : include : DivFrame [mix 1 para.advanceScaleMM 2] 4
 				include : df.markSet.e
 				local subDf : df.slice 4 3 0
 				include : mShapeBody subDf XH
 				include : MidHook.general
 					left   -- subDf.rightSB
 					right  -- df.rightSB
-					top    -- XH * 0.625 + df.mvs / 4
+					top    -- (XH * 0.625 + df.mvs / 4)
 					ada    -- ArchDepthA
 					adb    -- ArchDepthB
 					sw     -- subDf.mvs
@@ -316,19 +330,23 @@ glyph-block Letter-Latin-Lower-M : begin
 	alias 'cyrl/te/reduced.italic' null 'cyrl/te.italic'
 	select-variant 'cyrl/te.italic/descBase' (shapeFrom -- 'm')
 	select-variant 'cyrl/tjeKomi.italic'
+
+	select-variant 'cyrl/tje.italic/base/corner'
+	select-variant 'cyrl/tje.italic/base/cursive'
+
 	select-variant 'cyrl/teMidHook.italic' (follow -- 'cyrl/te.italic')
 	alias 'cyrl/te.BGR' null 'cyrl/te.italic'
 	alias 'cyrl/te/reduced.BGR' null 'cyrl/te.italic'
 	alias 'cyrl/teThreeLeg.italic' null 'cyrl/te.italic'
-	derive-composites 'cyrl/teDescender.italic' null 'cyrl/te.italic/descBase' : do
-		local df : DivFrame para.diversityM 3
+
+	derive-composites 'cyrl/teDescender.italic' null 'cyrl/te.italic/descBase' : let [df : dfM]
 		CyrDescender.rSideJut df.rightSB 0 (refSw -- df.mvs)
-	derive-composites 'mPalatalHook' 0x1D86 'm/descBase' : do
-		local df : DivFrame para.diversityM 3
+
+	derive-composites 'mPalatalHook' 0x1D86 'm/descBase' : let [df : dfM]
 		PalatalHook.r
 			xLink -- df.rightSB
-			x -- df.rightSB + SideJut
-			y -- 0
+			x     -- (df.rightSB + SideJut)
+			y     -- 0
 			refSw -- df.mvs
 
 	select-variant 'meng' 0x271
@@ -362,18 +380,18 @@ glyph-block Letter-Latin-Lower-M : begin
 			include : turnMShapeBodyImpl df top Body toothless tailed Serifs
 
 		create-glyph "turnm.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.diversityM 3
+			local df : include : dfM
 			include : df.markSet.e
 			include : turnMShapeBody df XH
 
 		create-glyph "capitalTurnm.\(suffix)" : glyph-proc
-			local df : include : DivFrame para.diversityM 3
+			local df : include : dfM
 			include : df.markSet.capital
 			include : turnMShapeBody df CAP
 
 		if (!tailed) : begin
 			create-glyph "turnmLeg.\(suffix)" : glyph-proc
-				local df : include : DivFrame para.diversityM 3
+				local df : include : dfM
 				include : df.markSet.p
 				include : turnMShapeBody df XH
 				eject-contour 'serifLT'
@@ -384,7 +402,7 @@ glyph-block Letter-Latin-Lower-M : begin
 				include : LeaningAnchor.Below.VBar.r df.rightSB
 
 		create-glyph "turnmSideways.\(suffix)" : glyph-proc
-			local realHeight : XH * para.diversityM
+			local realHeight : XH * para.advanceScaleMM
 			local realTop : XH / 2 + realHeight / 2
 			local realBot : XH / 2 - realHeight / 2
 			local df : DivFrame (realHeight / Width) 3 (XH * 0.1 / SB)
@@ -395,34 +413,34 @@ glyph-block Letter-Latin-Lower-M : begin
 
 		if (Body === SmallMArches && !tailed) : begin
 			create-glyph "cyrl/shcha.italic.\(suffix)" : glyph-proc
-				local df : include : DivFrame para.diversityM 3
+				local df : include : dfM
 				include : df.markSet.e
 				include : turnMShapeBody df XH
 				eject-contour 'serifLT'
 				include : CyrDescender.rSideJut df.rightSB 0 (refSw -- df.mvs)
 
-	select-variant 'turnm' 0x26F (follow -- [if [MEnoughSpaceForFullSerifs : dfM] 'turnm/full' 'turnm/reduced'])
+	select-variant 'turnm' 0x26F (follow -- [conditional-follow [MEnoughSpaceForFullSerifs] 'turnm/full' 'turnm/reduced'])
 	select-variant 'turnm/reduced' (shapeFrom -- 'turnm')
 
-	select-variant 'capitalTurnm' 0x19C (follow -- [if [MEnoughSpaceForFullSerifs : dfM] 'turnm/full' 'turnm/reduced'])
+	select-variant 'capitalTurnm' 0x19C (follow -- [conditional-follow [MEnoughSpaceForFullSerifs] 'turnm/full' 'turnm/reduced'])
 
-	select-variant 'turnmLeg' 0x270 (follow -- [if [MEnoughSpaceForFullSerifs : dfM] 'turnmLeg/full' 'turnmLeg/reduced'])
+	select-variant 'turnmLeg' 0x270 (follow -- [conditional-follow [MEnoughSpaceForFullSerifs] 'turnmLeg/full' 'turnmLeg/reduced'])
 	select-variant 'turnmLeg/reduced' (shapeFrom -- 'turnmLeg')
 
-	select-variant 'turnmSideways' 0x1D1F (follow -- [if [MEnoughSpaceForFullSerifs : dfM] 'turnm/full' 'turnm/reduced'])
+	select-variant 'turnmSideways' 0x1D1F (follow -- [conditional-follow [MEnoughSpaceForFullSerifs] 'turnm/full' 'turnm/reduced'])
 
-	select-variant 'cyrl/sha.italic' (shapeFrom -- 'turnm') (follow -- [if [MEnoughSpaceForFullSerifs : dfM] 'cyrl/sha.italic/full' 'cyrl/sha.italic/reduced'])
+	select-variant 'cyrl/sha.italic' (shapeFrom -- 'turnm') (follow -- [conditional-follow [MEnoughSpaceForFullSerifs] 'cyrl/sha.italic/full' 'cyrl/sha.italic/reduced'])
 	alias 'cyrl/sha.BGR' null 'cyrl/sha.italic'
 	select-variant 'cyrl/sha/reduced.italic' (shapeFrom -- 'turnm') (follow -- 'cyrl/sha.italic/reduced')
 	alias 'cyrl/sha/reduced.BGR' null 'cyrl/sha/reduced.italic'
 
-	select-variant 'cyrl/shcha.italic' (follow -- [if [MEnoughSpaceForFullSerifs : dfM] 'cyrl/shcha.italic/full' 'cyrl/shcha.italic/reduced'])
+	select-variant 'cyrl/shcha.italic' (follow -- [conditional-follow [MEnoughSpaceForFullSerifs] 'cyrl/shcha.italic/full' 'cyrl/shcha.italic/reduced'])
 	alias 'cyrl/shcha.BGR' null 'cyrl/shcha.italic'
 	select-variant 'cyrl/shcha/reduced.italic' (shapeFrom -- 'cyrl/shcha.italic') (follow -- 'cyrl/shcha.italic/reduced')
 	alias 'cyrl/shcha/reduced.BGR' null 'cyrl/shcha/reduced.italic'
 
-	derive-composites 'cyrl/te.SRB' null 'cyrl/sha.italic' 'macronAbove'
-	derive-composites 'cyrl/te/reduced.SRB' null 'cyrl/sha/reduced.italic' 'macronAbove'
+	derive-composites 'cyrl/te.SRB' null 'cyrl/sha.italic' 'cyrl/te.SRB/overlineAbove'
+	derive-composites 'cyrl/te/reduced.SRB' null 'cyrl/sha/reduced.italic' 'cyrl/te.SRB/overlineAbove'
 
 	glyph-block-import Letter-Blackboard : BBS BBD BBBarLeft
 	create-glyph 'mathbb/m' 0x1D55E : glyph-proc
@@ -436,32 +454,32 @@ glyph-block Letter-Latin-Lower-M : begin
 		include : BBBarLeft df.leftSB 0 XH (bbd -- bbd) (bbs -- bbs)
 		include : union
 			HBar.b (xMid - bbd) xMid 0 bbs
-			nShoulder
+			nShoulder.shape
 				stroke -- bbs
-				left -- (df.leftSB + bbd + [HSwToV bbs])
-				right -- xMid
-				fine -- ShoulderFine
+				left   -- (df.leftSB + bbd + [HSwToV bbs])
+				right  -- xMid
+				fine   -- ShoulderFine
 			intersection
 				VBar.r (xMid - bbd) 0 XH bbs
-				nShoulderMask
+				nShoulder.mask
 					stroke -- bbs
-					left -- (df.leftSB + bbd + [HSwToV bbs] + 1)
-					right -- (xMid - 1)
-					top -- (XH - 1)
-					fine -- ShoulderFine
+					left   -- (df.leftSB + bbd + [HSwToV bbs] + 1)
+					right  -- (xMid - 1)
+					top    -- (XH - 1)
+					fine   -- ShoulderFine
 		include : union
 			HBar.b (df.rightSB - bbd) df.rightSB 0 bbs
-			nShoulder
+			nShoulder.shape
 				leftY0 -- 0
 				stroke -- bbs
-				left -- xMid
-				right -- df.rightSB
-				fine -- ShoulderFine
+				left   -- xMid
+				right  -- df.rightSB
+				fine   -- ShoulderFine
 			intersection
 				VBar.r (df.rightSB - bbd) 0 XH bbs
-				nShoulderMask
+				nShoulder.mask
 					stroke -- bbs
-					left -- (xMid + 1)
-					right -- (df.rightSB - 1)
-					top -- (XH - 1)
-					fine -- ShoulderFine
+					left   -- (xMid + 1)
+					right  -- (df.rightSB - 1)
+					top    -- (XH - 1)
+					fine   -- ShoulderFine

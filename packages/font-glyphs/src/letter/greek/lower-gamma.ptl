@@ -9,8 +9,10 @@ glyph-block Letter-Greek-Lower-Gamma : begin
 	glyph-block-import Common-Derivatives
 	glyph-block-import Letter-Blackboard : BBS BBD BBBarLeft
 
+	alias 'grek/gamma.straight' null 'cyrl/ue.straightSerifless'
+	alias 'grek/gamma.curly'    null 'cyrl/ue.curlySerifless'
 
-	create-glyph 'grek/gamma' 0x3B3 : glyph-proc
+	create-glyph 'grek/gamma.casual' : glyph-proc
 		include : MarkSet.p
 
 		local xMid : [mix SB RightSB 0.46] + [HSwToV HalfStroke]
@@ -28,6 +30,8 @@ glyph-block Letter-Greek-Lower-Gamma : begin
 			quadControls 0 0.3 6
 			g4   xMid 0 [widths.rhs : Stroke * 0.9]
 
+	select-variant 'grek/gamma' 0x3B3
+
 	create-glyph 'mathbb/grek/gamma' 0x213D : glyph-proc
 		include : MarkSet.p
 
@@ -36,8 +40,8 @@ glyph-block Letter-Greek-Lower-Gamma : begin
 		local xMid : [mix SB RightSB 0.46] + [HSwToV : 0.46 * swEqv]
 		local xStart : SB + [HSwToV : 0.4 * swEqv]
 
-		include : HBar.t    (xStart - BBD) (xStart + (cor - 1) * BBD) XH        BBS
-		include : HBar.b (xMid - BBD)   (xMid)                     Descender BBS
+		include : HBar.t (xStart - BBD) (xStart + (cor - 1) * BBD) XH        BBS
+		include : HBar.b (xMid   - BBD) (xMid)                     Descender BBS
 
 		foreach {ob ot} [items-of {{ 0 (cor - 1) } { (-1) (-1) }}] : include : dispiro
 			g4 (xStart + ot * BBD) XH [widths.rhs.heading BBS Downward]

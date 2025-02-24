@@ -46,22 +46,22 @@ glyph-block Symbol-Punctuation-At : begin
 				curl (RightSB - HalfStroke + TanSlope * sw) (bot + O)
 
 	define [FourFoldShape height fSolidInner] : glyph-proc
-		local df : include : DivFrame para.diversityM [if fSolidInner 3.25 4]
+		local df : include : DivFrame para.advanceScaleM [if fSolidInner 3.25 4]
 
 		local top : SymbolMid + height / 2
 		local bot : SymbolMid - height / 2
 		local otop : mix bot top 0.75
 		local obot : mix top bot 0.8
 
-		local sw  : AdviceStroke [if fSolidInner 3.25 4]    df.div
-		local swh : AdviceStroke [if fSolidInner 3.25 3.75] df.div
+		local sw  : AdviceStroke [if fSolidInner 3.25 4]    df.adws
+		local swh : AdviceStroke [if fSolidInner 3.25 3.75] df.adws
 
 		local kM12   : if fSolidInner 0.40 (1 / 3)
 		local kM12Sw : if fSolidInner 0.25 0.5
 		local m1 : [mix (df.leftSB + [HSwToV (sw / 2)]) (df.rightSB - [HSwToV (sw / 2)]) kM12      ] - [HSwToV (sw * kM12Sw)]
 		local m2 : [mix (df.leftSB + [HSwToV (sw / 2)]) (df.rightSB - [HSwToV (sw / 2)]) (1 - kM12)] + [HSwToV (sw * kM12Sw)]
 
-		local ad : ArchDepth * [Math.sqrt df.div]
+		local ad : ArchDepth * [Math.sqrt df.adws]
 		local ada : ArchDepthAOf ad df.width
 		local adb : ArchDepthBOf ad df.width
 
@@ -120,12 +120,12 @@ glyph-block Symbol-Punctuation-At : begin
 		local shrink 0.6
 
 		include : dispiro
-			straight.up.start (m1 - (sw * (1 - shrink) * HVContrast)) (otop - adb) [widths.heading (sw * shrink) 0 Upward]
+			straight.up.start (m1 - [HSwToV : sw * (1 - shrink)]) (otop - adb) [widths.heading (sw * shrink) 0 Upward]
 			arch.lhs otop (sw -- sw) (swBefore -- (sw * shrink))
 			flat SB (otop - ada)
 			curl SB (obot + adb)
 			arch.lhs obot (sw -- sw) (swAfter -- (sw * shrink))
-			straight.up.end (m1 - (sw * (1 - shrink) * HVContrast)) (obot + ada) [widths.heading (sw * shrink) 0 Upward]
+			straight.up.end (m1 - [HSwToV : sw * (1 - shrink)]) (obot + ada) [widths.heading (sw * shrink) 0 Upward]
 
 		include : dispiro
 			widths.lhs sw
@@ -139,7 +139,7 @@ glyph-block Symbol-Punctuation-At : begin
 			arch.lhs atTurnBot (sw -- sw) (swBefore -- (sw * shrink))
 			flat RightSB (atTurnBot + ada)
 			curl RightSB (top - ArchDepthB)
-			hookend (top - O) (sw -- sw)
+			hookend top (sw -- sw)
 			g4 SB (top - Hook)
 
 	define NormalHeight : mix (OperTop - OperBot) (ParenTop - ParenBot) 0.600

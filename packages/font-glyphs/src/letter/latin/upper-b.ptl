@@ -21,7 +21,7 @@ glyph-block Letter-Latin-Upper-B : begin
 		local barleft SB
 		local mockBowlDepth : BowlXDepth top (bowl - stroke) barleft RightSB stroke
 		local curvleft : RightSB - SB * 0.5 - mockBowlDepth + topArcInnerShift
-		local curvleftTop : Math.min curvleft (RightSB - SB * 0.5 - OX - stroke * 1.375 + topArcInnerShift)
+		local curvleftTop : Math.min curvleft : RightSB - SB * 0.5 - OX - stroke * 1.375 + topArcInnerShift
 		local xTopArcRight : [mix SB RightSB BArcMix] - OX * 2 + topArcShift
 		local fine : stroke * CThin
 
@@ -78,7 +78,7 @@ glyph-block Letter-Latin-Upper-B : begin
 
 	define [InterruptShape bp top sw st sb] : begin
 		local bowl : top * bp + sw * (1 - bp)
-		local gap : Math.max ((RightSB - SB - [HSwToV : 2 * sw]) * 0.15) [AdviceStroke 10]
+		local gap : Math.max ((RightSB - SB - [HSwToV : 2 * sw]) * 0.15) : AdviceStroke 10
 		return : VBar.l (SB + [HSwToV sw]) (bowl - 1 * sw + O) (bowl + 0 * sw - O) gap
 
 	define [StdShape top sw st sb] : BShape top (stroke -- sw) (serifTop -- st) (serifBot -- sb)
@@ -88,16 +88,16 @@ glyph-block Letter-Latin-Upper-B : begin
 	define [AsymmetricShape top sw st sb] : BShape top
 		stroke -- [fallback sw : AdviceStroke2 2 3 top]
 		barPos -- AsymmetricBBarPos
-		topArcShift -- -(RightSB - SB) * 0.05
-		topArcInnerShift -- -(RightSB - SB) * 0.1
+		topArcShift -- ((-0.05) * (RightSB - SB))
+		topArcInnerShift -- ((-0.1) * (RightSB - SB))
 		serifTop -- st
 		serifBot -- sb
 	define [AsymmetricShapeInterrupted top sw st sb] : difference [AsymmetricShape top sw st sb] [InterruptShape 0.6 top sw st sb]
 	define [AsymmetricMask top sw] : BShapeMask top
 		stroke -- [fallback sw : AdviceStroke2 2 3 top]
 		barPos -- AsymmetricBBarPos
-		topArcShift -- -(RightSB - SB) * 0.05
-		topArcInnerShift -- -(RightSB - SB) * 0.1
+		topArcShift -- ((-0.05) * (RightSB - SB))
+		topArcInnerShift -- ((-0.1) * (RightSB - SB))
 
 	define [BOverlayStroke top bp] : begin
 		local stroke : AdviceStroke2 2 3 top
@@ -111,7 +111,7 @@ glyph-block Letter-Latin-Upper-B : begin
 	define [BahtBar sw] : VBar.m [mix SB RightSB 0.48] (CAP - Descender / 2) (Descender / 2) sw
 	define [BitcoinBar sw] : begin
 		local xMid : mix SB RightSB 0.48
-		local gap : Math.max [AdviceStroke 4] ((RightSB - SB) / 6)
+		local gap : Math.max ((RightSB - SB) / 6) : AdviceStroke 4
 		return : union
 			VBar.m (xMid - (gap + [HSwToV sw]) / 2) (CAP - Descender / 2) (Descender / 2) sw
 			VBar.m (xMid + (gap + [HSwToV sw]) / 2) (CAP - Descender / 2) (Descender / 2) sw
@@ -149,12 +149,12 @@ glyph-block Letter-Latin-Upper-B : begin
 			include [refer-glyph "B.\(suffix)"] AS_BASE ALSO_METRICS
 			include : BOverlayBar CAP bp
 
-		if (!fAsymmetric) : create-glyph "smcpB.\(suffix)" : glyph-proc
+		if (!fAsymmetric) : create-glyph "cyrl/ve.\(suffix)" : glyph-proc
 			include : MarkSet.e
 			include : body XH [AdviceStroke2 2 3 XH] ts bs
 
 		if (!fGap && !fAsymmetric) : create-glyph "smcpBBar.\(suffix)" : glyph-proc
-			include [refer-glyph "smcpB.\(suffix)"] AS_BASE ALSO_METRICS
+			include [refer-glyph "cyrl/ve.\(suffix)"] AS_BASE ALSO_METRICS
 			include : BOverlayBar XH bp
 
 		create-glyph "currency/baht.\(suffix)" : union
@@ -185,13 +185,43 @@ glyph-block Letter-Latin-Upper-B : begin
 	alias-reduced-variant 'grek/Beta/sansSerif' 'grek/Beta' 'B/sansSerif' MathSansSerif
 	alias 'cyrl/Ve' 0x412 'B'
 
-	select-variant 'smcpB' 0x299
-	alias 'cyrl/ve.upright' null 'smcpB'
-
 	select-variant 'BBar'
-	select-variant 'smcpBBar' 0x1D03
-
 	select-variant 'Bhookleft' 0x181
+
+	define [CursiveCyrveShape top] : glyph-proc
+		local stroke : AdviceStroke2 2 3 top
+		local fine : stroke * CThin
+		local yMiddle : top * HBarPos
+		local adb : top - [mix (yMiddle + stroke / 2) (top - O - stroke) (ArchDepthA / (ArchDepthA + ArchDepthB))] + [HSwToV TanSlope] * stroke
+		local ada : [mix (stroke + O) (yMiddle - stroke / 2) (ArchDepthA / (ArchDepthA + ArchDepthB))] - [HSwToV TanSlope] * stroke
+		local xMidLeft : mix (RightSB - [HSwToV stroke]) (SB + [HSwToV stroke]) 0.7
+		local xMidArc : Math.max [mix xMidLeft RightSB 0.1] [mix SB RightSB 0.5]
+		include : dispiro
+			widths.lhs fine
+			flat xMidLeft (yMiddle - (fine - stroke / 2)) [heading Rightward]
+			curl xMidArc  (yMiddle - (fine - stroke / 2)) [heading Rightward]
+			archv
+			g4   (RightSB - (OX - O)) (top - adb) [widths.lhs stroke]
+			arch.lhs top
+			flat (SB + O) (top - SmallArchDepthA)
+			curl (SB + O) (0   + SmallArchDepthB)
+			arch.lhs 0
+			g4   (RightSB - (OX + O)) (0 + ada)
+			arcvh
+			flat xMidArc  (yMiddle + (fine - stroke / 2)) [widths.heading fine 0 Leftward]
+			curl xMidLeft (yMiddle + (fine - stroke / 2)) [widths.heading fine 0 Leftward]
+
+	create-glyph 'cyrl/ve.cursive' : glyph-proc
+		include : MarkSet.e
+		include : CursiveCyrveShape XH
+
+	create-glyph 'cyrl/ve.cursiveTall' : glyph-proc
+		include : MarkSet.b
+		include : CursiveCyrveShape Ascender
+
+	select-variant 'cyrl/ve'  0x432
+	select-variant 'smcpB'    0x299  (shapeFrom -- 'cyrl/ve')
+	select-variant 'smcpBBar' 0x1D03
 
 	create-glyph 'mathbb/B' 0x1D539 : glyph-proc
 		include : MarkSet.capital
@@ -204,39 +234,7 @@ glyph-block Letter-Latin-Upper-B : begin
 					VBar.r ([mix SB RightSB BArcMix] - BBD - OX * 2) (CAP * BBarPos) CAP BBS
 					VBar.l (SB + BBD) 0 CAP BBS
 
-	define [ItalicCyrveShape top] : glyph-proc
-		local stroke : AdviceStroke2 2 3 top
-		local mid : mix RightSB SB 0.65
-		local midy : top * HBarPos
-		local adb : top - [mix (midy + stroke / 2) (top - O - stroke) (ArchDepthA / (ArchDepthA + ArchDepthB))] + [HSwToV TanSlope] * stroke
-		local ada : [mix (stroke + O) (midy - stroke / 2) (ArchDepthA / (ArchDepthA + ArchDepthB))] - [HSwToV TanSlope] * stroke
-		local fine : stroke * CThin
-		include : dispiro
-			widths.lhs fine
-			flat mid (midy - (fine - stroke / 2)) [heading Rightward]
-			curl Middle (midy - (fine - stroke / 2)) [heading Rightward]
-			archv
-			g4   (RightSB - (OX - O)) (top - adb) [widths.lhs stroke]
-			arch.lhs top
-			flat (SB + O) (top - SmallArchDepthA)
-			curl (SB + O) SmallArchDepthB
-			arch.lhs 0
-			g4   (RightSB - (OX - O) - O * 2) (ada)
-			arcvh
-			flat Middle (midy + (fine - stroke / 2)) [widths.heading fine 0 Leftward]
-			curl mid (midy + (fine - stroke / 2)) [widths.heading fine 0 Leftward]
-
-	create-glyph 'cyrl/ve.italic' : glyph-proc
-		include : MarkSet.e
-		include : ItalicCyrveShape XH
-
-	create-glyph 'grek/betaSymbol' 0x3D0 : glyph-proc
-		include : MarkSet.b
-		include : ItalicCyrveShape Ascender
-
-	alias 'cyrl/ve.BGR' null 'grek/betaSymbol'
-
-	create-glyph 'grek/beta' 0x3B2 : glyph-proc
+	create-glyph 'grek/beta.standard' : glyph-proc
 		include : MarkSet.bp
 		include : LeaningAnchor.Below.VBar.l SB
 		define pBar 0.55
@@ -244,7 +242,7 @@ glyph-block Letter-Latin-Upper-B : begin
 		define yMiddle : [mix 0 Ascender pBar] - Stroke * 0.7 # Bottom edge
 		define ada : ArchDepthAOf (ArchDepth * 0.75) (0.5 * Width)
 		define adb : ArchDepthBOf (ArchDepth * 0.75) (0.5 * Width)
-		define xMidLeft : mix (SB + [HSwToV Stroke]) (RightSB - [HSwToV Stroke]) 0.3
+		define xMidLeft : mix (RightSB - [HSwToV Stroke]) (SB + [HSwToV Stroke]) 0.7
 		define xMidArc  : Math.max [mix xMidLeft RightSB 0.1] [mix SB RightSB 0.5]
 		include : dispiro
 			widths.rhs
@@ -262,9 +260,15 @@ glyph-block Letter-Latin-Upper-B : begin
 			archv
 			g4   (RightSB - OX)  [YSmoothMidR 0 (yMiddle + Stroke) ada adb] [widths.rhs]
 			arch.rhs 0 (swAfter -- ShoulderFine)
-			g4.up.end (SB + HVContrast * (Stroke - ShoulderFine)) adb [widths.rhs ShoulderFine]
+			g4.up.end (SB + [HSwToV : Stroke - ShoulderFine]) adb [widths.rhs ShoulderFine]
 
-	derive-composites 'latn/beta' 0xA7B5 'grek/beta'
+	alias 'grek/beta.cursive'  null  'cyrl/ve.cursiveTall'
+	select-variant 'grek/beta' 0x3B2
+
+	alias 'grek/betaSymbol' 0x3D0 'cyrl/ve.cursiveTall'
+	alias 'cyrl/ve.BGR'     null  'cyrl/ve.cursiveTall'
+
+	derive-composites 'latn/beta' 0xA7B5 'grek/beta.standard'
 		if SLAB [SerifFrame.fromDf [DivFrame 1] XH Descender].lb.fullSide [no-shape]
 
 	create-glyph 'cyrl/veRounded' 0x1C80 : glyph-proc
