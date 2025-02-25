@@ -13,4 +13,4 @@ jobs:
       with:
         name: kira
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    - run: nix build .
+    - run: nix-build
