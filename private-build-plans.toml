@@ -1,6 +1,6 @@
 [buildPlans.IosevkaCode]
 family = "Iosevka Code"
-spacing = "normal"
+spacing = "fontconfig-mono"
 serifs = "slab"
 noCvSs = true
 
