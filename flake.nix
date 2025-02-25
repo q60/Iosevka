@@ -6,6 +6,16 @@
     utils.url = "github:numtide/flake-utils";
   };
 
+  nixConfig = {
+    extra-substituters = [
+      "https://kira.cachix.org/"
+    ];
+
+    extra-trusted-public-keys = [
+      "kira.cachix.org-1:THBrq/BplPxOJnWnxCBMOeP03ReON+FUYZpiDTnZqwA="
+    ];
+  };
+
   outputs = {
     self,
     nixpkgs,
@@ -17,7 +27,7 @@
       inherit (pkgs) buildNpmPackage;
     in {
       packages = {
-        default = buildNpmPackage rec {
+        default = buildNpmPackage {
           name = "iosevka-q60";
 
           nativeBuildInputs = with pkgs; [
@@ -30,8 +40,8 @@
 
           buildPhase = ''
             runHook preBuild
-            npm run build -- ttf::IosevkaCode --jCmd=$NIX_BUILD_CORES
-            npm run build -- ttf::IosevkaTerminal --jCmd=$NIX_BUILD_CORES
+            npm run build -- ttf::IosevkaCode --jCmd=6
+            npm run build -- ttf::IosevkaTerminal --jCmd=6
             runHook postBuild
           '';
 
