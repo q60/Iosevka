@@ -46,9 +46,7 @@
           buildPhase = ''
             runHook preBuild
             ln -s ${pkgs.copyPathToStore ./private-build-plans.toml} private-build-plans.toml
-            npm run build -- ttf::IosevkaCode --jCmd=$NIX_BUILD_CORES
-            npm run build -- ttf::IosevkaTerminal --jCmd=$NIX_BUILD_CORES
-            npm run build -- ttf::IosevkaWitchcraft --jCmd=$NIX_BUILD_CORES
+            npm run build -- ttf::IosevkaCode ttf::IosevkaTerminal ttf::IosevkaWitchcraft ttf::IosevkaWitchcraftNormal --jCmd=$NIX_BUILD_CORES
             runHook postBuild
           '';
 
@@ -59,6 +57,7 @@
             install "dist/IosevkaCode/TTF"/* "$fontdir"
             install "dist/IosevkaTerminal/TTF"/* "$fontdir"
             install "dist/IosevkaWitchcraft/TTF"/* "$fontdir"
+            install "dist/IosevkaWitchcraftNormal/TTF"/* "$fontdir"
             runHook postInstall
           '';
         };
